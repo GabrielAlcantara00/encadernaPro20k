@@ -5,9 +5,9 @@ window.LP_CONFIG = {
   brand: "Papeleira Pro 20K",
 
   /* Links de checkout. Cole o link de cada oferta entre as aspas. */
-  basic:   { price: 10, checkout: "" }, // Plano Básico
-  premium: { price: 37, checkout: "" }, // Plano Premium (preço da página)
-  upgrade: { price: 27, checkout: "" }, // Premium com desconto: popup do Básico e roleta de saída
+  basic:   { price: 10, checkout: "https://ggcheckout.app/checkout/v5/mf7JINDqHjH4RusRscjM9n" }, // Plano Básico
+  premium: { price: 37, checkout: "https://ggcheckout.app/checkout/v5/dD6fwvV7qEd6AUkqVOuVCo" }, // Plano Premium (preço da página)
+  upgrade: { price: 27, checkout: "https://ggcheckout.app/checkout/v5/m8teMITsnJDpvXSBb8QuFH" }, // Premium com desconto: popup do Básico e roleta de saída
 
   /* Preço "de" que aparece riscado */
   anchor: { basic: 97, premium: 197 },
