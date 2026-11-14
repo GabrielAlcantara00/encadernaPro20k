@@ -13,8 +13,8 @@ window.LP_CONFIG = {
   anchor: { basic: 97, premium: 197 },
 
   /* Rastreamento */
-  pixelId: "",   // ID do Pixel da Meta. Deixe "" para não carregar o pixel.
-  utmify: true,  // script de UTMs da UTMify (o mesmo da LP dos bottons)
+  pixelId: "2348303565735596", // ID do Pixel da Meta (não é segredo).
+  // O script da UTMify enviado está embutido diretamente no index.html.
 
   /* Suporte (aparece no rodapé, nos Termos e na Privacidade) */
   supportEmail: "", // ex.: "suporte@seudominio.com.br"
