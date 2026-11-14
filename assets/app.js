@@ -56,16 +56,49 @@
     }
   }
 
-  /* ---------- rastreamento ---------- */
-  function withUtm(url) {
+  /* ---------- rastreamento: SOMENTE ViewContent ---------- */
+  function cookie(name) {
+    var prefix = name + "=";
+    var parts = document.cookie ? document.cookie.split(";") : [];
+    for (var i = 0; i < parts.length; i++) {
+      var part = parts[i].trim();
+      if (part.indexOf(prefix) === 0) return decodeURIComponent(part.slice(prefix.length));
+    }
+    return "";
+  }
+
+  function makeEventId() {
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+      return window.crypto.randomUUID();
+    }
+    return "vc_" + Date.now() + "_" + Math.random().toString(36).slice(2, 12);
+  }
+
+  function buildFbc() {
+    var existing = cookie("_fbc");
+    if (existing) return existing;
+    var fbclid = params.get("fbclid");
+    return fbclid ? "fb.1." + Date.now() + "." + fbclid : "";
+  }
+
+  function sendServerViewContent(eventId) {
+    var payload = {
+      event_id: eventId,
+      event_source_url: window.location.href,
+      fbp: cookie("_fbp"),
+      fbc: buildFbc(),
+      content_name: C.brand || "Papeleira Pro 20K"
+    };
+
     try {
-      var u = new URL(url, window.location.href);
-      UTM_KEYS.forEach(function (k) {
-        var v = params.get(k);
-        if (v && !u.searchParams.get(k)) u.searchParams.set(k, v);
-      });
-      return u.toString();
-    } catch (e) { return url; }
+      window.fetch("/api/meta-view-content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        credentials: "same-origin",
+        keepalive: true
+      }).catch(function () { /* não interfere na LP */ });
+    } catch (e) { /* não interfere na LP */ }
   }
 
   function loadPixel() {
@@ -73,23 +106,16 @@
     /* eslint-disable */
     !function (f, b, e, v, n, t, s) { if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments) }; if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = "2.0"; n.queue = []; t = b.createElement(e); t.async = !0; t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s) }(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
     /* eslint-enable */
+
+    var eventId = makeEventId();
+    var content = { content_name: C.brand || "Papeleira Pro 20K" };
+
     window.fbq("init", String(C.pixelId));
-    window.fbq("track", "PageView");
-  }
+    // Browser Pixel: SOMENTE ViewContent. O eventID é o mesmo enviado pela CAPI para deduplicação.
+    window.fbq("track", "ViewContent", content, { eventID: eventId });
 
-  function track(ev, data, custom) {
-    try { if (window.fbq) window.fbq(custom ? "trackCustom" : "track", ev, data || {}); } catch (e) { /* ignora */ }
-  }
-
-  function loadUtmify() {
-    if (C.utmify === false) return;
-    var s = document.createElement("script");
-    s.src = "https://cdn.utmify.com.br/scripts/utms/latest.js";
-    s.async = true;
-    s.defer = true;
-    s.setAttribute("data-utmify-prevent-xcod-sck", "");
-    s.setAttribute("data-utmify-prevent-subids", "");
-    document.body.appendChild(s);
+    // Dá um pequeno tempo para o Pixel criar/atualizar cookies _fbp/_fbc antes do envio server-side.
+    window.setTimeout(function () { sendServerViewContent(eventId); }, 350);
   }
 
   /* ---------- checkout ---------- */
@@ -109,7 +135,6 @@
         return;
       }
       ss.set("checkout", "1");
-      track("InitiateCheckout", { value: p.price, currency: "BRL", content_name: (C.brand || "LP") + " · " + plan });
       a.href = withUtm(p.checkout);
     });
   }
@@ -120,7 +145,6 @@
     if (!dlg) return;
     if (typeof dlg.showModal === "function") { if (!dlg.open) dlg.showModal(); }
     else { dlg.setAttribute("open", ""); dlg.classList.add("fb"); }
-    track("PopupBasico", {}, true);
   }
   function closeUpgrade() {
     if (!dlg) return;
@@ -193,7 +217,6 @@
     exitEl.hidden = false;
     document.documentElement.style.overflow = "hidden";
     window.setTimeout(function () { if (spinBtn) spinBtn.focus({ preventScroll: true }); }, 60);
-    track("RoletaAberta", {}, true);
   }
 
   function closeExit() {
@@ -232,7 +255,6 @@
     }
     var cta = $("#exit-win [data-checkout]");
     if (cta) cta.focus({ preventScroll: true });
-    track("RoletaPremium", { value: plans.upgrade.price, currency: "BRL" }, true);
   }
 
   function wireExit() {
@@ -354,6 +376,4 @@
   wireReveal();
   wireCalc();
   loadPixel();
-  if (document.readyState === "complete") loadUtmify();
-  else window.addEventListener("load", loadUtmify);
 })();
