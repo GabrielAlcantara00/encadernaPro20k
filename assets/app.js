@@ -56,6 +56,18 @@
     }
   }
 
+  /* ---------- preserva UTMs nos links de checkout ---------- */
+  function withUtm(url) {
+    try {
+      var u = new URL(url, window.location.href);
+      UTM_KEYS.forEach(function (k) {
+        var v = params.get(k);
+        if (v && !u.searchParams.get(k)) u.searchParams.set(k, v);
+      });
+      return u.toString();
+    } catch (e) { return url; }
+  }
+
   /* ---------- rastreamento: SOMENTE ViewContent ---------- */
   function cookie(name) {
     var prefix = name + "=";
