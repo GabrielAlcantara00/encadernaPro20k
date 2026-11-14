@@ -493,10 +493,9 @@ h3{font-weight:800;font-size:20px;line-height:1.22;letter-spacing:-.02em}
 /* =========================================================
    ILUSTRAÇÕES DA LP DE REFERÊNCIA — 2026-11-12
    ========================================================= */
-.hero-photo-wrap{position:relative;display:grid;place-items:center;min-width:0}
-.hero-photo-glow{position:absolute;inset:13%;background:radial-gradient(circle,rgba(255,45,135,.25),rgba(255,92,163,.08) 42%,transparent 72%);filter:blur(26px);pointer-events:none}
-.hero-photo{position:relative;z-index:1;width:min(100%,620px);height:auto;display:block;border-radius:24px;border:1px solid rgba(255,255,255,.11);box-shadow:0 28px 80px rgba(0,0,0,.48),0 0 55px rgba(255,45,135,.09)}
-.hero-photo-badge{position:absolute;z-index:2;left:50%;bottom:18px;transform:translateX(-50%);white-space:nowrap;padding:9px 14px;border-radius:999px;background:rgba(10,8,12,.86);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(9px);color:#fff;font:800 11px/1 var(--body);letter-spacing:.07em;text-transform:uppercase;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.hero-photo-wrap{position:relative;display:grid;place-items:center;min-width:0;isolation:isolate}
+.hero-photo-glow{position:absolute;z-index:0;inset:10% 5%;background:radial-gradient(ellipse at center,rgba(255,45,135,.52) 0%,rgba(255,45,135,.26) 35%,rgba(255,92,163,.10) 52%,transparent 74%);filter:blur(42px);transform:scale(1.08);pointer-events:none}
+.hero-photo{position:relative;z-index:1;width:min(112%,760px);max-width:none;height:auto;display:block;border:0;border-radius:0;background:transparent;box-shadow:none;filter:drop-shadow(0 28px 34px rgba(0,0,0,.42)) drop-shadow(0 0 24px rgba(255,45,135,.12))}
 
 .proof-sec{overflow:hidden}
 .proof-marquee{overflow-x:auto;padding:4px max(18px,calc((100vw - 1180px)/2));margin-inline:calc(50% - 50vw);scroll-snap-type:x mandatory;scrollbar-width:none}
@@ -521,12 +520,9 @@ h3{font-weight:800;font-size:20px;line-height:1.22;letter-spacing:-.02em}
 
 @media (max-width:900px){
   .hero-photo-wrap{order:3;margin:24px auto 2px;width:min(100%,620px)}
-  .hero-photo{border-radius:20px}
   .proof-track img{width:min(78vw,300px)}
 }
 @media (max-width:560px){
-  .hero-photo{border-radius:17px}
-  .hero-photo-badge{bottom:12px;font-size:9px;padding:8px 10px}
   .proof-track{gap:12px}
   .proof-track img{width:min(82vw,286px);border-radius:15px}
   .cat-photo{aspect-ratio:4/3}
@@ -563,4 +559,9 @@ body{
 .plan,.checks,.stack,.guarantee,.flow,.facts,.fact,.faq,.final,.footer,
 .upgrade,.exit-modal,.sticky{
   text-align:center;
+}
+
+@media(max-width:700px){
+  .hero-photo{width:min(108%,680px)}
+  .hero-photo-glow{inset:14% 4%;filter:blur(32px)}
 }
