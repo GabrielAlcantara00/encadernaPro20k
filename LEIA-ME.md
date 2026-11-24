@@ -4,7 +4,7 @@
 
 - `basic.checkout`: link do checkout do Básico (R$ 10).
 - `premium.checkout`: link do Premium (R$ 37).
-- `upgrade.checkout`: link do Premium com desconto (R$ 27). É o mesmo link no popup do Básico e na roleta.
+- `upgrade.checkout`: link do Premium com desconto (R$ 27). É o mesmo link no popup do Básico e no presente de saída.
 - `pixelId`: ID do Pixel da Meta. Vale usar um pixel separado do Bottons.
 - `supportEmail` e `whatsapp`: aparecem no rodapé, nos Termos e na Privacidade.
 - `brand`: nome do produto. Troca na página toda, menos no título da aba (`<title>` do `index.html`).
@@ -19,10 +19,10 @@ Enquanto um link de checkout estiver vazio, o botão daquele plano mostra o avis
 
 ## 3. Como testar
 
-- `?roleta=1` no fim do endereço abre a roleta.
+- `?presente=1` no fim do endereço abre o presente de saída (a pessoa toca 3 vezes, ele abre e mostra o Premium por R$ 27).
 - `?popup=1` abre o popup do Básico.
-- A roleta aparece uma vez por sessão e não aparece depois que a pessoa clica em comprar. Para ver de novo, use uma aba anônima.
-- No computador, a roleta abre quando o mouse sai pelo topo da janela. No celular, quando a pessoa rola para cima rápido no começo da página, depois de 9 segundos (mesma regra da LP dos bottons).
+- O presente aparece uma vez por sessão e não aparece depois que a pessoa clica em comprar. Para ver de novo, use uma aba anônima.
+- No computador, o presente abre quando o mouse sai pelo topo da janela. No celular, quando a pessoa rola para cima rápido no começo da página, depois de 9 segundos (mesma regra da LP dos bottons).
 - As UTMs da URL (utm_source, utm_medium, utm_campaign, utm_content, utm_term, src, sck, fbclid) vão junto para o checkout.
 
 ## 4. Confira antes de anunciar
@@ -34,6 +34,6 @@ A página promete: 20.347 arquivos, +1.180 no Premium, 34 categorias, app com fi
 - `index.html`: a página
 - `config.js`: preços, links, pixel e suporte
 - `assets/styles.css`: visual
-- `assets/app.js`: popup, roleta, calculadora, pixel e UTMs
+- `assets/app.js`: popup, presente de saída, calculadora, pixel e UTMs
 - `termos.html` e `privacidade.html`: páginas legais
 - `favicon.svg` e `vercel.json`

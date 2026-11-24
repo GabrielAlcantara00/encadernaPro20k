@@ -170,49 +170,107 @@
     dlg.addEventListener("click", function (e) { if (e.target === dlg) closeUpgrade(); });
   }
 
-  /* ---------- roleta de saída ---------- */
-  var exitEl = $("#exit"), wheel = $("#wheel"), spinBtn = $("#spin"), play = $("#exit-play"), win = $("#exit-win");
-  var exitOpened = false, spinning = false, spun = false;
-  var SPIN_LABEL = "Girar minha roleta 🎁";
+  /* ---------- oferta de saída: presente que abre ---------- */
+  var exitEl = $("#exit"), modal = $("#gift-modal"), gift = $("#gift"), giftBox = $("#gift-box");
+  var burst = $("#gift-burst"), hintText = $("#gift-hint-text");
+  var exitOpened = false, taps = 0, opening = false, timers = [];
+  var TAPS = 3;
+  var touchUI = !!(window.matchMedia && window.matchMedia("(hover: none)").matches);
+  var calm = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  var HINTS = touchUI
+    ? ["Toque 3 vezes no presente", "Isso! Mais 2 toques", "Só mais um..."]
+    : ["Clique 3 vezes no presente", "Isso! Mais 2 cliques", "Só mais um..."];
+  var COLORS = ["#ff2d87", "#ff5ca3", "#ffb6d5", "#ffffff", "#ffd166"];
 
-  function buildWheel() {
-    if (!wheel) return;
-    var P = plans.premium.price, U = plans.upgrade.price;
-    var decoy = [P - 3, P - 5, P - 8].filter(function (v) { return v > U; });
-    var segs = [
-      ["PREMIUM", moneyShort(U)],          // 0 · é sempre aqui que a roleta para
-      ["BÔNUS", "EXTRA"],
-      ["PREMIUM", moneyShort(decoy[0] || P)],
-      ["5%", "OFF"],
-      ["PREMIUM", moneyShort(decoy[1] || P)],
-      ["10%", "OFF"],
-      ["PREMIUM", moneyShort(decoy[2] || P)],
-      ["FICHAS", "GRÁTIS"]
-    ];
-    var colors = ["#ff2d87", "#1c1222", "#b5105a", "#0e0a11", "#ff5ca3", "#1c1222", "#8f0c48", "#0e0a11"];
-    var n = segs.length, step = 360 / n, cx = 200, cy = 200;
-    var pt = function (a, r) { var rad = (a - 90) * Math.PI / 180; return [(cx + r * Math.cos(rad)).toFixed(2), (cy + r * Math.sin(rad)).toFixed(2)]; };
-    var svg = '<circle cx="200" cy="200" r="199" fill="#2a0f1f"/>';
-    for (var i = 0; i < n; i++) {
-      var p0 = pt(i * step - step / 2, 186), p1 = pt(i * step + step / 2, 186);
-      svg += '<path d="M200 200 L' + p0[0] + " " + p0[1] + " A186 186 0 0 1 " + p1[0] + " " + p1[1] + ' Z" fill="' + colors[i] + '" stroke="rgba(255,255,255,.16)" stroke-width="1.5"/>';
-      svg += '<g transform="rotate(' + i * step + ' 200 200)"><text x="200" y="64" text-anchor="middle" font-size="16">' + segs[i][0] + '</text><text x="200" y="90" text-anchor="middle" font-size="22">' + segs[i][1] + "</text></g>";
+  function later(fn, ms) { timers.push(window.setTimeout(fn, ms)); }
+  function buzz(p) {
+    // vibra no Android quando a pessoa toca; o iPhone não tem vibração no navegador
+    try {
+      if (!navigator.vibrate || (navigator.userActivation && !navigator.userActivation.hasBeenActive)) return;
+      navigator.vibrate(p);
+    } catch (e) { /* sem vibração */ }
+  }
+  function motion(el, frames, opts) {
+    if (calm || !el || typeof el.animate !== "function") return null;
+    try { return el.animate(frames, opts); } catch (e) { return null; }
+  }
+  function stopBox() {
+    if (giftBox && typeof giftBox.getAnimations === "function") {
+      giftBox.getAnimations().forEach(function (a) { a.cancel(); });
     }
-    svg += '<circle cx="200" cy="200" r="190" fill="none" stroke="#ff5ca3" stroke-width="5"/>';
-    for (var b = 0; b < 16; b++) {
-      var q = pt(b * 22.5 + 11.25, 193);
-      svg += '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="3.6" fill="' + (b % 2 ? "#ffffff" : "#ffb6d5") + '"/>';
+  }
+  function removeNode(el) { return function () { if (el.parentNode) el.parentNode.removeChild(el); }; }
+
+  // o presente balança mais a cada toque; no último ele treme e cresce antes de abrir
+  function shake(level) {
+    stopBox();
+    var last = level >= TAPS, n = last ? 12 : 6, amp = last ? 6 : 5 + level * 3, frames = [];
+    for (var i = 0; i <= n; i++) {
+      var k = i / n, edge = i === 0 || i === n;
+      var force = last ? 0.5 + k * 0.7 : 1 - k * 0.8;
+      var rot = edge ? 0 : (i % 2 ? -1 : 1) * amp * force;
+      var sx = edge ? 1 : 1 + (i % 2 ? 0.05 : -0.04) * force;
+      var grow = last ? 1 + k * 0.12 : 1;
+      frames.push({ transform: "rotate(" + rot.toFixed(2) + "deg) scale(" + (sx * grow).toFixed(3) + "," + ((2 - sx) * grow).toFixed(3) + ")" });
     }
-    wheel.innerHTML = svg;
+    motion(giftBox, frames, { duration: last ? 560 : 380 + level * 60, easing: last ? "ease-in" : "ease-out", fill: last ? "forwards" : "none" });
   }
 
-  function resetWheel() {
-    spinning = false;
-    spun = false;
-    if (play) play.hidden = false;
-    if (win) win.hidden = true;
-    if (spinBtn) { spinBtn.disabled = false; spinBtn.textContent = SPIN_LABEL; }
-    if (wheel) { wheel.style.transition = "none"; wheel.style.transform = "rotate(180deg)"; }
+  // faíscas que saem do presente, numa camada por cima do modal
+  function sparks(count, reach, big) {
+    if (calm || !burst || !giftBox) return;
+    var r = giftBox.getBoundingClientRect(), b = burst.getBoundingClientRect();
+    var ox = r.left + r.width / 2 - b.left, oy = r.top + r.height * (big ? 0.5 : 0.42) - b.top;
+    for (var i = 0; i < count; i++) {
+      var el = document.createElement("i");
+      el.className = ["p-paper", "p-dot", "p-star"][i % 3];
+      el.style.left = ox.toFixed(1) + "px";
+      el.style.top = oy.toFixed(1) + "px";
+      el.style.background = COLORS[i % COLORS.length];
+      burst.appendChild(el);
+      var ang = (i / count) * Math.PI * 2 + Math.random() * 0.6;
+      var dist = reach * (0.45 + Math.random() * 0.55);
+      var dx = Math.cos(ang) * dist, dy = Math.sin(ang) * dist - (big ? 40 : 14);
+      var fall = big ? 60 + Math.random() * 60 : 20;
+      var spin = (Math.random() * 2 - 1) * (big ? 720 : 360);
+      var size = big ? 0.8 + Math.random() * 0.8 : 0.6 + Math.random() * 0.5;
+      var a = motion(el, [
+        { transform: "translate(-50%,-50%) translate(0px,0px) rotate(0deg) scale(" + (size * 0.4).toFixed(2) + ")", opacity: 1 },
+        { transform: "translate(-50%,-50%) translate(" + (dx * 0.8).toFixed(1) + "px," + (dy * 0.8).toFixed(1) + "px) rotate(" + Math.round(spin * 0.6) + "deg) scale(" + size.toFixed(2) + ")", opacity: 1, offset: 0.45 },
+        { transform: "translate(-50%,-50%) translate(" + dx.toFixed(1) + "px," + (dy + fall).toFixed(1) + "px) rotate(" + Math.round(spin) + "deg) scale(" + (size * 0.5).toFixed(2) + ")", opacity: 0 }
+      ], { duration: big ? 1000 + Math.random() * 700 : 520 + Math.random() * 220, easing: "cubic-bezier(.12,.75,.3,1)", fill: "forwards" });
+      if (a) a.onfinish = removeNode(el);
+      else burst.removeChild(el);
+    }
+  }
+
+  // chuva de confete na tela toda depois que abre
+  function rain() {
+    var cf = $("#confetti");
+    if (!cf || calm) return;
+    var html = "";
+    for (var i = 0; i < 54; i++) {
+      html += '<i style="left:' + (Math.random() * 100).toFixed(1) + "%;background:" + COLORS[i % COLORS.length] +
+        ";animation-delay:" + (Math.random() * 0.6).toFixed(2) + "s;animation-duration:" + (2.2 + Math.random() * 1.4).toFixed(2) + 's"></i>';
+    }
+    cf.innerHTML = html;
+  }
+
+  function resetGift() {
+    timers.forEach(function (t) { window.clearTimeout(t); });
+    timers = [];
+    taps = 0;
+    opening = false;
+    stopBox();
+    if (modal) {
+      modal.classList.remove("is-charging");
+      modal.classList.remove("is-open");
+      modal.classList.remove("is-done");
+      modal.setAttribute("data-taps", "0");
+    }
+    if (gift) gift.disabled = false;
+    if (hintText) hintText.textContent = HINTS[0];
+    if (burst) burst.innerHTML = "";
     var cf = $("#confetti");
     if (cf) cf.innerHTML = "";
   }
@@ -225,10 +283,10 @@
     }
     exitOpened = true;
     ss.set("exit", "1");
-    resetWheel();
+    resetGift();
     exitEl.hidden = false;
     document.documentElement.style.overflow = "hidden";
-    window.setTimeout(function () { if (spinBtn) spinBtn.focus({ preventScroll: true }); }, 60);
+    window.setTimeout(function () { if (modal) modal.focus({ preventScroll: true }); }, 60);
   }
 
   function closeExit() {
@@ -237,42 +295,44 @@
     document.documentElement.style.overflow = "";
   }
 
-  function spin() {
-    if (spinning || spun || !wheel) return;
-    spinning = true;
-    spinBtn.disabled = true;
-    spinBtn.textContent = "Girando...";
-    var jitter = Math.random() * 24 - 12; // fica dentro da fatia do Premium com desconto
-    // força o navegador a aplicar a posição inicial antes da animação
-    void wheel.getBoundingClientRect();
-    wheel.style.transition = "transform 5s cubic-bezier(.12,.68,.08,1)";
-    wheel.style.transform = "rotate(" + (360 * 6 + jitter) + "deg)";
-    var stage = wheel.parentNode;
-    // para no "PREMIUM R$ 27", mostra por um instante e só então abre o resultado
-    window.setTimeout(function () { if (stage) stage.classList.add("landed"); spinBtn.textContent = "Premium por " + moneyShort(plans.upgrade.price) + "!"; }, 5050);
-    window.setTimeout(function () { spinning = false; spun = true; if (stage) stage.classList.remove("landed"); showWin(); }, 6300);
+  function tapGift() {
+    if (opening || !modal) return;
+    taps += 1;
+    modal.setAttribute("data-taps", String(taps));
+    if (taps < TAPS) {
+      shake(taps);
+      sparks(5 + taps * 3, 80 + taps * 20, false);
+      buzz(taps === 1 ? 14 : 24);
+      if (hintText) hintText.textContent = HINTS[taps];
+      return;
+    }
+    opening = true;
+    if (gift) gift.disabled = true;
+    if (hintText) hintText.textContent = "Abrindo...";
+    if (calm) { openGift(); return; }
+    modal.classList.add("is-charging");
+    shake(TAPS);
+    buzz(40);
+    later(openGift, 560);
   }
 
-  function showWin() {
-    if (play) play.hidden = true;
-    if (win) win.hidden = false;
-    var cf = $("#confetti");
-    if (cf) {
-      var colors = ["#ff2d87", "#ff5ca3", "#ffb6d5", "#ffffff", "#ffd166"], html = "";
-      for (var i = 0; i < 54; i++) {
-        html += '<i style="left:' + (Math.random() * 100).toFixed(1) + "%;background:" + colors[i % colors.length] +
-          ";animation-delay:" + (Math.random() * 0.6).toFixed(2) + "s;animation-duration:" + (2.2 + Math.random() * 1.4).toFixed(2) + 's"></i>';
-      }
-      cf.innerHTML = html;
-    }
-    var cta = $("#exit-win [data-checkout]");
-    if (cta) cta.focus({ preventScroll: true });
+  // a tampa voa, a luz estoura e o cartão do Premium sobe de dentro da caixa
+  function openGift() {
+    modal.classList.remove("is-charging");
+    modal.classList.add("is-open");
+    sparks(36, 180, true);
+    rain();
+    buzz([30, 40, 70]);
+    later(function () {
+      modal.classList.add("is-done");
+      var cta = $("#exit-win [data-checkout]");
+      if (cta) cta.focus({ preventScroll: true });
+    }, calm ? 60 : 1150);
   }
 
   function wireExit() {
     if (!exitEl) return;
-    buildWheel();
-    if (spinBtn) spinBtn.addEventListener("click", spin);
+    if (gift) gift.addEventListener("click", tapGift);
     $$("[data-close-exit]").forEach(function (b) { b.addEventListener("click", closeExit); });
     exitEl.addEventListener("mousedown", function (e) { if (e.target === exitEl) closeExit(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !exitEl.hidden) closeExit(); });
@@ -294,8 +354,8 @@
       lastY = y;
     }, { passive: true });
 
-    // testes: ?roleta=1 abre a roleta, ?popup=1 abre o popup do Básico
-    if (params.get("roleta") === "1") window.setTimeout(function () { openExit(true); }, 700);
+    // testes: ?presente=1 abre o presente de saída, ?popup=1 abre o popup do Básico
+    if (params.get("presente") === "1") window.setTimeout(function () { openExit(true); }, 700);
     if (params.get("popup") === "1") window.setTimeout(openUpgrade, 700);
   }
 

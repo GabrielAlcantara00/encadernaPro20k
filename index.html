@@ -497,37 +497,50 @@
   </div>
 </dialog>
 
-<!-- roleta de saída -->
+<!-- oferta de saída: presente que abre -->
 <div class="exit" id="exit" hidden>
   <div class="confetti" id="confetti" aria-hidden="true"></div>
-  <div class="exit-modal" role="dialog" aria-modal="true" aria-labelledby="exit-title">
+  <div class="gift-burst" id="gift-burst" aria-hidden="true"></div>
+  <div class="exit-modal gift-modal" id="gift-modal" data-taps="0" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="exit-title">
     <button type="button" class="exit-close" data-close-exit aria-label="Fechar oferta"><svg class="ic"><use href="#i-x"/></svg></button>
-    <div class="exit-play" id="exit-play">
-      <span class="exit-badge">⚡ Oferta de saída desbloqueada</span>
-      <h2 id="exit-title">Ei, espera! <span>Gire e revele sua condição.</span></h2>
-      <p>Antes de sair, gire a roleta e veja a condição liberada para o <b data-brand>Papeleira Pro 20K</b>.</p>
-      <div class="wheel-stage">
-        <div class="wheel-glow"></div>
-        <div class="wheel-pointer"></div>
-        <svg class="wheel" id="wheel" viewBox="0 0 400 400" role="img" aria-label="Roleta promocional"></svg>
-        <div class="wheel-hub" aria-hidden="true">20K</div>
-      </div>
-      <button type="button" class="btn btn-primary btn-block" id="spin">Girar minha roleta 🎁</button>
-      <small class="exit-note">Roleta promocional desta sessão.</small>
-    </div>
-    <div class="exit-win" id="exit-win" hidden>
-      <span class="emoji">🎉</span>
-      <h2>Parabéns! Você <span>desbloqueou o Premium.</span></h2>
-      <p>Leve o <b data-brand>Papeleira Pro 20K</b> completo, com os 5 bônus, pela condição liberada nesta sessão.</p>
-      <div class="win-price">
-        <small>Plano Premium · oferta de saída</small>
+    <div class="gift-fold gift-fold-out"><div><span class="exit-badge">🎁 Um presente antes de você ir</span></div></div>
+    <h2 id="exit-title"><em class="gh-closed">Ei, espera! <span>Abra seu presente.</span></em><em class="gh-open">Abriu! <span>Premium liberado.</span></em></h2>
+    <div class="gift-fold gift-fold-out"><div><p class="gift-intro">Tem uma condição especial do <b data-brand>Papeleira Pro 20K</b> guardada aqui dentro.</p></div></div>
+    <div class="gift-stage">
+      <div class="gift-fx" aria-hidden="true"><i class="gift-rays"></i><i class="gift-glow"></i><i class="gift-ring"></i></div>
+      <i class="gift-spark s1" aria-hidden="true"></i><i class="gift-spark s2" aria-hidden="true"></i><i class="gift-spark s3" aria-hidden="true"></i><i class="gift-spark s4" aria-hidden="true"></i>
+      <button type="button" class="gift" id="gift" aria-label="Abrir o presente">
+        <span class="gift-float"><span class="gift-box" id="gift-box">
+          <span class="gift-body"></span>
+          <span class="gift-seam"></span>
+          <span class="gift-lid">
+            <svg class="gift-bow" viewBox="0 0 120 66" aria-hidden="true" focusable="false">
+              <defs><linearGradient id="gift-bow-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2bf"/><stop offset=".5" stop-color="#ffd257"/><stop offset="1" stop-color="#e09b16"/></linearGradient></defs>
+              <path d="M55 52 44 66l8-1.5 6-9.5z M65 52l11 14-8-1.5-6-9.5z" fill="#cf8a10"/>
+              <path d="M58 46C46 31 22 6 10 17 1 26 16 46 56 52z M62 46c12-15 36-40 48-29 9 9-6 29-46 35z" fill="url(#gift-bow-g)"/>
+              <path d="M57 49C44 41 27 29 19 30c3 9 19 17 37 21z M63 49c13-8 30-20 38-19-3 9-19 17-37 21z" fill="#c9840c" opacity=".55"/>
+              <path d="M48 36C38 25 25 14 16 18 M72 36c10-11 23-22 32-18" fill="none" stroke="#fff8dc" stroke-width="2.6" stroke-linecap="round" opacity=".75"/>
+              <rect x="50" y="40" width="20" height="17" rx="6.5" fill="url(#gift-bow-g)"/>
+              <rect x="53" y="42.5" width="9" height="3.2" rx="1.6" fill="#fff8dc" opacity=".8"/>
+            </svg>
+          </span>
+        </span></span>
+        <span class="gift-shadow"></span>
+      </button>
+      <div class="gift-card">
+        <small>Plano Premium</small>
         <del data-price-full="premium">R$ 37,00</del>
         <strong data-price-full="upgrade">R$ 27,00</strong>
         <b>Você economiza <span data-save>R$ 10,00</span></b>
       </div>
+      <i class="gift-flash" aria-hidden="true"></i>
+    </div>
+    <div class="gift-fold gift-fold-out"><div><p class="gift-hint"><span class="gift-dots" aria-hidden="true"><i></i><i></i><i></i></span><span id="gift-hint-text" aria-live="polite">Toque 3 vezes no presente</span></p></div></div>
+    <div class="exit-win gift-fold gift-fold-in" id="exit-win"><div>
+      <p>Leve o <b data-brand>Papeleira Pro 20K</b> completo, com os 5 bônus, só nesta visita.</p>
       <a href="#planos" class="btn btn-primary" data-checkout="upgrade"><span>Quero aproveitar <span data-price-full="upgrade">R$ 27,00</span></span><svg class="ic"><use href="#i-arrow"/></svg></a>
       <button type="button" class="exit-decline" data-close-exit>Não, obrigada. Quero sair.</button>
-    </div>
+    </div></div>
   </div>
 </div>
 

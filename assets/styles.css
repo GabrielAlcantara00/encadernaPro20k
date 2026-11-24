@@ -431,7 +431,7 @@ h3{font-weight:800;font-size:20px;line-height:1.22;letter-spacing:-.02em}
 .up-continue:hover{color:#fff}
 .up-note{margin-top:6px;text-align:center;font-size:12.5px;color:var(--dim)}
 
-/* ---------- roleta de saída ---------- */
+/* ---------- oferta de saída: presente que abre ---------- */
 .exit{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:12px;background:rgba(4,2,6,.82);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
 .exit[hidden]{display:none}
 .exit-modal{position:relative;width:min(500px,100%);max-height:calc(100dvh - 24px);overflow:auto;border-radius:26px;border:1px solid #4a2340;background:linear-gradient(180deg,#160c19 0%,#09060b 100%);box-shadow:0 30px 100px rgba(0,0,0,.75),0 0 80px rgba(255,45,135,.16);padding:28px 24px 22px;text-align:center;animation:pop .4s cubic-bezier(.2,.9,.3,1.2)}
@@ -439,27 +439,100 @@ h3{font-weight:800;font-size:20px;line-height:1.22;letter-spacing:-.02em}
 .exit-modal h2{margin-top:14px;font-size:clamp(25px,6.4vw,32px);line-height:1.04}
 .exit-modal h2 span{display:block;color:var(--pink-2)}
 .exit-modal > div > p{margin-top:10px;color:var(--muted);font-size:15px}
-.wheel-stage{position:relative;width:min(330px,82vw);aspect-ratio:1;margin:22px auto 18px}
-.wheel-glow{position:absolute;inset:-6%;border-radius:50%;background:radial-gradient(circle,rgba(255,45,135,.45),transparent 66%);filter:blur(14px)}
-.wheel{position:relative;width:100%;height:100%;border-radius:50%;transform:rotate(180deg);will-change:transform;filter:drop-shadow(0 18px 30px rgba(0,0,0,.6))}
-.wheel-pointer{position:absolute;left:50%;top:-14px;z-index:3;transform:translateX(-50%);width:0;height:0;border-left:17px solid transparent;border-right:17px solid transparent;border-top:32px solid #fff;filter:drop-shadow(0 4px 6px rgba(0,0,0,.55))}
-.wheel-pointer::after{content:"";position:absolute;left:-7px;top:-29px;width:14px;height:14px;border-radius:50%;background:var(--pink)}
-.landed .wheel-pointer{animation:bob .45s ease-in-out 2}
-.landed .wheel-glow{background:radial-gradient(circle,rgba(255,45,135,.75),transparent 66%)}
-@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
-.wheel text{font-family:var(--display);font-weight:900;fill:#fff;letter-spacing:.02em}
-.wheel-hub{position:absolute;left:50%;top:50%;z-index:2;width:25%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;display:grid;place-items:center;background:#0b080d;border:4px solid var(--pink);box-shadow:0 0 0 4px rgba(0,0,0,.35),0 0 24px rgba(255,45,135,.45);font:900 clamp(18px,5.4vw,24px)/1 var(--display);letter-spacing:-.03em;color:#fff}
-.exit-note{display:block;margin-top:10px;font-size:12px;color:var(--dim)}
+.gift-modal{overflow-x:hidden}
+.gift-modal:focus{outline:none}
+.gift-fold{display:grid;grid-template-rows:1fr;transition:grid-template-rows .5s cubic-bezier(.3,.7,.2,1),opacity .3s ease,visibility 0s}
+.gift-fold > div{min-height:0;overflow:hidden}
+.gift-modal.is-open .gift-fold-out{grid-template-rows:0fr;opacity:0;visibility:hidden;transition:grid-template-rows .5s cubic-bezier(.3,.7,.2,1),opacity .25s ease,visibility 0s .5s}
+.gift-fold-in{grid-template-rows:0fr;opacity:0;visibility:hidden}
+.gift-modal.is-open .gift-fold-in{grid-template-rows:1fr;opacity:1;visibility:visible;transition:grid-template-rows .5s cubic-bezier(.3,.7,.2,1),opacity .45s ease .5s,visibility 0s}
+.gift-modal.is-done .gift-fold-in > div{overflow:visible}
+.gift-modal h2 em{display:block;font-style:normal}
+.gift-modal .gh-open,.gift-modal.is-open .gh-closed{display:none}
+.gift-modal.is-open .gh-open{display:block;animation:giftIn .5s cubic-bezier(.2,.9,.3,1.2) .1s both}
+@keyframes giftIn{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+.gift-intro{margin-top:10px;color:var(--muted);font-size:15px;line-height:1.5}
+.gift-stage{position:relative;height:clamp(214px,60vw,236px);margin:10px 0}
+.gift-fx{position:absolute;left:0;right:0;top:-28px;bottom:-28px;overflow:hidden;pointer-events:none;-webkit-mask:radial-gradient(closest-side,#000 62%,transparent);mask:radial-gradient(closest-side,#000 62%,transparent)}
+.gift-rays{position:absolute;left:50%;top:50%;width:340px;height:340px;margin:-170px 0 0 -170px;border-radius:50%;opacity:.45;animation:giftSpin 18s linear infinite;transition:opacity .4s ease,scale .7s cubic-bezier(.2,.8,.2,1)}
+.gift-rays::before,.gift-rays::after{content:"";position:absolute;inset:0;border-radius:50%;-webkit-mask:radial-gradient(closest-side,#000 18%,transparent 100%);mask:radial-gradient(closest-side,#000 18%,transparent 100%)}
+.gift-rays::before{background:repeating-conic-gradient(rgba(255,92,163,0) 0deg 8deg,rgba(255,92,163,.34) 8deg 15deg)}
+.gift-rays::after{background:repeating-conic-gradient(rgba(255,214,110,0) 0deg 7deg,rgba(255,231,160,.55) 7deg 13deg);opacity:0;transition:opacity .35s ease}
+@keyframes giftSpin{to{transform:rotate(360deg)}}
+.gift-glow{position:absolute;left:50%;top:52%;width:230px;height:230px;margin:-115px 0 0 -115px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,45,135,.6),rgba(255,45,135,.16) 55%,transparent);animation:giftPulse 2.8s ease-in-out infinite;transition:transform .4s ease}
+@keyframes giftPulse{0%,100%{opacity:.75}50%{opacity:1}}
+.gift-ring{position:absolute;left:50%;top:52%;width:170px;height:170px;margin:-85px 0 0 -85px;border-radius:50%;border:2px solid rgba(255,182,213,.6);opacity:0;animation:giftRing 2.4s ease-out infinite}
+@keyframes giftRing{0%{opacity:.7;transform:scale(.62)}100%{opacity:0;transform:scale(1.2)}}
+.gift-spark{position:absolute;z-index:2;width:14px;height:14px;background:#fff;clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);opacity:0;pointer-events:none;animation:giftTwinkle 2.6s ease-in-out infinite}
+.gift-spark.s1{left:22%;top:14%}
+.gift-spark.s2{right:20%;top:24%;width:10px;height:10px;background:#ffd166;animation-delay:.9s}
+.gift-spark.s3{left:18%;bottom:26%;width:9px;height:9px;background:var(--pink-3);animation-delay:1.7s}
+.gift-spark.s4{right:24%;bottom:14%;width:12px;height:12px;animation-delay:.45s}
+@keyframes giftTwinkle{0%,100%{opacity:0;transform:scale(.3) rotate(0)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
+.gift{position:absolute;inset:0;z-index:3;display:grid;place-items:center;width:100%;padding:0;border:0;background:none;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+.gift:focus-visible{outline:none}
+.gift:focus-visible .gift-box{outline:3px solid var(--pink-2);outline-offset:10px;border-radius:16px}
+.gift[disabled]{cursor:default}
+@media (hover:hover){.gift:not([disabled]):hover .gift-box{filter:brightness(1.07)}}
+.gift-float{display:block;animation:giftFloat 2.8s ease-in-out infinite}
+@keyframes giftFloat{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-9px) rotate(1.5deg)}}
+.gift-box{position:relative;display:block;width:clamp(128px,38vw,150px);height:clamp(138px,41vw,162px)}
+.gift-shadow{position:absolute;left:50%;top:calc(50% + clamp(62px,18.4vw,72px));width:clamp(96px,28vw,112px);height:16px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.65),transparent);transform:translateX(-50%);animation:giftShadow 2.8s ease-in-out infinite;transition:opacity .3s ease}
+@keyframes giftShadow{0%,100%{transform:translateX(-50%) scale(1);opacity:1}50%{transform:translateX(-50%) scale(.8);opacity:.65}}
+.gift-body,.gift-lid{position:absolute;display:block}
+.gift-body{z-index:1;left:7%;right:7%;top:45%;bottom:0;border-radius:6px 6px 14px 14px;background:radial-gradient(rgba(255,255,255,.17) 1.4px,transparent 1.9px) 0 0/13px 13px,linear-gradient(165deg,#ff4f9b 0%,#ff2d87 42%,#d3136a 82%,#b30e5a 100%);box-shadow:inset -10px 0 16px -6px rgba(90,0,40,.38),inset 0 -14px 18px -8px rgba(60,0,30,.5),0 18px 30px -6px rgba(0,0,0,.55)}
+.gift-body::before,.gift-lid::before{content:"";position:absolute;top:0;bottom:0;left:50%;background:linear-gradient(90deg,#c98a12 0%,#ffd45e 28%,#fff0b8 50%,#ffd45e 72%,#c98a12 100%)}
+.gift-body::before{width:21%;margin-left:-10.5%}
+.gift-lid{z-index:3;left:0;right:0;top:30%;height:18%;border-radius:9px;background:radial-gradient(rgba(255,255,255,.2) 1.4px,transparent 1.9px) 0 0/13px 13px,linear-gradient(180deg,#ff80b9 0%,#ff3e92 55%,#e01d74 100%);box-shadow:inset 0 2px 0 rgba(255,255,255,.3),inset 0 -5px 8px -3px rgba(80,0,40,.4),0 8px 12px -4px rgba(70,0,35,.55);transform-origin:50% 100%;transition:transform .28s cubic-bezier(.3,1.6,.5,1)}
+.gift-lid::before{width:18%;margin-left:-9%}
+.gift-seam{position:absolute;z-index:2;left:10%;right:10%;top:46%;height:4px;border-radius:4px;background:#fff6d6;box-shadow:0 0 14px 5px rgba(255,210,90,.85),0 0 32px 12px rgba(255,45,135,.5);opacity:0;transition:opacity .25s ease}
+.gift-bow{position:absolute;left:50%;bottom:70%;width:80%;max-width:none;height:auto;aspect-ratio:120/66;transform:translateX(-50%);overflow:visible;filter:drop-shadow(0 3px 3px rgba(90,30,0,.35))}
+.gift-modal[data-taps="1"] .gift-seam{opacity:.4}
+.gift-modal[data-taps="2"] .gift-seam,.gift-modal.is-charging .gift-seam{opacity:1}
+.gift-modal[data-taps="2"] .gift-lid{transform:translateY(-4px) rotate(-2.5deg)}
+.gift-modal.is-charging .gift-lid{transform:translateY(-9px) rotate(-5deg)}
+.gift-modal[data-taps="1"] .gift-glow{transform:scale(1.1)}
+.gift-modal[data-taps="2"] .gift-glow{transform:scale(1.22);background:radial-gradient(closest-side,rgba(255,92,163,.75),rgba(255,209,102,.2) 55%,transparent)}
+.gift-modal.is-charging .gift-glow{transform:scale(1.4);background:radial-gradient(closest-side,rgba(255,236,170,.85),rgba(255,92,163,.35) 50%,transparent);animation:none;opacity:1}
+.gift-modal[data-taps="2"] .gift-rays,.gift-modal.is-charging .gift-rays{opacity:.8}
+.gift-modal.is-open .gift-lid{animation:giftLid .8s cubic-bezier(.2,.65,.3,1) forwards}
+@keyframes giftLid{0%{transform:translateY(-9px) rotate(-5deg);opacity:1}100%{transform:translate(-30px,-150px) rotate(-40deg);opacity:0}}
+.gift-modal.is-open .gift-body{animation:giftBody .5s ease-in .06s forwards}
+@keyframes giftBody{to{transform:translateY(16px) scale(.72);opacity:0}}
+.gift-modal.is-open .gift-seam,.gift-modal.is-open .gift-shadow,.gift-modal.is-open .gift-spark{opacity:0;animation:none}
+.gift-modal.is-open .gift{pointer-events:none;visibility:hidden;transition:visibility 0s 1s}
+.gift-modal.is-open .gift-rays{opacity:1;scale:1.2;animation-duration:7s}
+.gift-modal.is-open .gift-rays::after{opacity:1}
+.gift-modal.is-open .gift-glow{transform:scale(1.5);background:radial-gradient(closest-side,rgba(255,236,170,.7),rgba(255,45,135,.3) 50%,transparent);animation:none;opacity:1}
+.gift-modal.is-open .gift-ring{animation:giftBoom .8s ease-out forwards;border:3px solid #ffe08a}
+@keyframes giftBoom{0%{opacity:1;transform:scale(.4)}100%{opacity:0;transform:scale(1.75)}}
+.gift-flash{position:absolute;left:0;right:0;top:-10%;bottom:-10%;z-index:6;pointer-events:none;background:radial-gradient(circle at 50% 52%,rgba(255,255,255,.95) 0%,rgba(255,220,238,.6) 20%,transparent 56%);opacity:0}
+.gift-modal.is-open .gift-flash{animation:giftFlash .75s ease-out forwards}
+@keyframes giftFlash{0%{opacity:0}14%{opacity:1}100%{opacity:0}}
+.gift-card{position:absolute;left:50%;top:50%;z-index:5;width:min(262px,88%);padding:16px 16px 15px;border-radius:20px;overflow:hidden;text-align:center;opacity:0;pointer-events:none;transform:translate(-50%,-30%) scale(.2);background:radial-gradient(120% 80% at 50% 0%,rgba(255,92,163,.3),transparent 62%),linear-gradient(180deg,#2b1023 0%,#150a13 100%);border:1.5px solid rgba(255,182,213,.8);box-shadow:0 0 0 4px rgba(255,45,135,.16),0 24px 50px rgba(0,0,0,.6),0 0 60px rgba(255,45,135,.45)}
+.gift-card small{display:block;font:800 10.5px/1.3 var(--body);letter-spacing:.15em;text-transform:uppercase;color:var(--pink-3)}
+.gift-card del{display:block;margin-top:8px;color:var(--dim);font-weight:700;font-size:15px;line-height:1.2}
+.gift-card strong{display:block;margin-top:2px;font:900 clamp(46px,13.5vw,58px)/1 var(--display);letter-spacing:-.05em;color:#fff;text-shadow:0 6px 26px rgba(255,45,135,.6)}
+.gift-card b{display:inline-block;margin-top:10px;padding:7px 12px;border-radius:999px;background:rgba(74,222,128,.14);color:var(--ok);font:800 12px/1 var(--body);letter-spacing:.06em}
+.gift-card::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-60%;width:50%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.3),transparent);transform:skewX(-12deg);opacity:0;pointer-events:none}
+.gift-modal.is-open .gift-card{animation:giftCard .95s cubic-bezier(.17,1.3,.35,1) .14s forwards,giftCardGlow 2.6s ease-in-out 1.4s infinite}
+.gift-modal.is-open .gift-card::after{animation:giftShine 1s ease-in-out 1s forwards}
+@keyframes giftCard{0%{opacity:0;transform:translate(-50%,-25%) scale(.2) rotate(-12deg)}30%{opacity:1}100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}}
+@keyframes giftCardGlow{0%,100%{box-shadow:0 0 0 4px rgba(255,45,135,.16),0 24px 50px rgba(0,0,0,.6),0 0 50px rgba(255,45,135,.4)}50%{box-shadow:0 0 0 5px rgba(255,45,135,.24),0 24px 50px rgba(0,0,0,.6),0 0 80px rgba(255,45,135,.65)}}
+@keyframes giftShine{0%{opacity:1;transform:skewX(-12deg) translateX(0)}100%{opacity:1;transform:skewX(-12deg) translateX(560%)}}
+.gift-hint{display:flex;align-items:center;justify-content:center;gap:10px;margin:0;padding:4px 0 8px;font:800 12px/1.3 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--pink-3)}
+.gift-dots{display:inline-flex;gap:6px;flex:none}
+.gift-dots i{width:9px;height:9px;border-radius:50%;background:rgba(255,182,213,.22);transition:background .2s ease,transform .25s cubic-bezier(.3,1.8,.5,1),box-shadow .2s ease}
+.gift-modal[data-taps="1"] .gift-dots i:nth-child(1),.gift-modal[data-taps="2"] .gift-dots i:nth-child(-n+2),.gift-modal[data-taps="3"] .gift-dots i{background:var(--pink);transform:scale(1.25);box-shadow:0 0 10px rgba(255,45,135,.8)}
+.gift-burst{position:absolute;inset:0;z-index:4;overflow:hidden;pointer-events:none}
+.gift-burst i{position:absolute;width:8px;height:13px;border-radius:2px;opacity:0;will-change:transform,opacity}
+.gift-burst i.p-dot{width:8px;height:8px;border-radius:50%}
+.gift-burst i.p-star{width:15px;height:15px;border-radius:0;clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%)}
 .exit-close{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line-2);background:rgba(255,255,255,.04);display:grid;place-items:center;cursor:pointer;color:var(--muted);z-index:4}
 .exit-close:hover{color:#fff;border-color:var(--pink)}
 .exit-close .ic{width:18px;height:18px}
 .exit-win{position:relative}
-.exit-win .emoji{font-size:46px;line-height:1;display:block;margin-top:6px}
-.win-price{margin:20px auto 0;padding:18px;border-radius:18px;border:1.5px solid var(--pink);background:rgba(255,45,135,.1)}
-.win-price small{display:block;font:800 11px/1.3 var(--body);letter-spacing:.14em;color:var(--pink-3)}
-.win-price del{display:block;margin-top:10px;color:var(--dim);font-weight:700}
-.win-price strong{display:block;font:900 58px/1 var(--display);letter-spacing:-.05em;color:#fff}
-.win-price b{display:inline-block;margin-top:10px;padding:7px 12px;border-radius:999px;background:rgba(74,222,128,.14);color:var(--ok);font:800 12px/1 var(--body);letter-spacing:.08em}
+.gift-modal .exit-win p{margin-top:4px;color:var(--muted);font-size:15px;line-height:1.5}
 .exit-win .btn{margin-top:18px;width:100%}
 .exit-decline{margin-top:10px;background:none;border:0;color:var(--dim);font-size:14px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:8px}
 .exit-decline:hover{color:#fff}
@@ -487,7 +560,9 @@ h3{font-weight:800;font-size:20px;line-height:1.22;letter-spacing:-.02em}
   .js .rv{opacity:1;transform:none;transition:none}
   .btn-pulse{animation:none}
   .bar i{transition:none;transform:none}
-  .wheel{transition-duration:.01s !important}
+  .gift-float,.gift-shadow,.gift-spark,.gift-ring,.gift-glow,.gift-rays,.gift-modal.is-open .gift-card::after{animation:none !important}
+  .gift-modal.is-open .gift-lid,.gift-modal.is-open .gift-body,.gift-modal.is-open .gift-flash,.gift-modal.is-open .gh-open{animation-duration:.01s !important;animation-delay:0s !important}
+  .gift-modal.is-open .gift-card{animation:giftCard .01s forwards !important}
 }
 
 /* =========================================================
